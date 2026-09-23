@@ -16,5 +16,11 @@ export class Home {
       description: 'Converta arquivos JSON em planilhas Excel (.xlsx) diretamente no navegador.',
       route: '/tools/json-to-excel',
     },
+    {
+      id: 'address-to-coordinates',
+      name: 'Endereço → Coordenadas',
+      description: 'Converta um objeto JSON de endereço em latitude e longitude.',
+      route: '/tools/address-to-coordinates',
+    },
   ];
 }

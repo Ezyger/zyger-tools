@@ -8,7 +8,7 @@ Zyger Tools brings together small and useful utilities for developers in one pla
 
 The project was created from real everyday needs: instead of repeatedly writing temporary scripts or relying on third-party websites for small tasks, the idea is to have a collection of tools that are quick to access, easy to understand, and safe to use.
 
-The first available tool is **JSON → Excel**.
+The available tools are **JSON → Excel** and **Address → Coordinates**.
 
 ---
 
@@ -57,6 +57,37 @@ Becomes:
 
 ---
 
+### 📍 Address → Coordinates
+
+Paste an address JSON object and get its latitude and longitude.
+
+Input:
+
+```json
+{
+  "city": "Manaus",
+  "complement": "",
+  "neighborhood": "Petrópolis",
+  "number": "200",
+  "postalCode": "69067520",
+  "state": "AM",
+  "street": "Rua Rio Nilo"
+}
+```
+
+Output:
+
+```json
+{
+  "latitude": "-3.10342",
+  "longitude": "-60.01268"
+}
+```
+
+Unlike JSON → Excel, this tool needs to send the assembled address to a geocoding provider ([Nominatim](https://nominatim.openstreetmap.org/), OpenStreetMap) to obtain the coordinates — it does not run fully offline.
+
+---
+
 ## 🔒 Privacy first
 
 Whenever possible, Zyger Tools processes data **directly in your browser**.
@@ -69,7 +100,13 @@ For JSON → Excel:
 - No analytics are performed on your content
 - Reloading or closing the page clears the data
 
-**Your data stays on your device.**
+For Address → Coordinates:
+
+- Only the assembled address (never the original JSON) is sent to the geocoding provider
+- No input data is stored
+- No analytics are performed on your content
+
+**Your data stays on your device, except when a tool explicitly needs a third-party service to work.**
 
 ---
 
@@ -98,6 +135,7 @@ The application is currently built with:
 - TypeScript
 - SCSS
 - SheetJS (`xlsx`)
+- Nominatim (OpenStreetMap) for geocoding, via Angular's native `HttpClient`
 
 The Angular application uses standalone components, signals and modern control-flow syntax.
 
@@ -119,7 +157,8 @@ The project intentionally keeps its architecture simple:
 src/app/
 ├── home/
 ├── tools/
-│   └── json-to-excel/
+│   ├── json-to-excel/
+│   └── address-to-coordinates/
 ├── shared/
 └── app.routes.ts
 ```

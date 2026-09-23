@@ -1,8 +1,8 @@
-# DevTools
+# Zyger Tools
 
 [Read in English](README.md)
 
-Uma aplicação web simples e focada, reunindo ferramentas para desenvolvedores com foco em privacidade. A primeira ferramenta disponível é o **JSON → Excel**, um conversor que transforma dados JSON em planilhas `.xlsx` inteiramente no navegador.
+Uma aplicação web simples e focada, reunindo ferramentas para desenvolvedores com foco em privacidade. As ferramentas disponíveis são o **JSON → Excel**, um conversor que transforma dados JSON em planilhas `.xlsx` inteiramente no navegador, e o **Address → Coordinates**, que converte um endereço em latitude/longitude.
 
 Este projeto faz parte do meu portfólio profissional e foi construído com um objetivo explícito: **simplicidade acima de sofisticação**. Cada decisão de design favorece código legível e explicável em vez de arquiteturas complexas.
 
@@ -10,7 +10,7 @@ Este projeto faz parte do meu portfólio profissional e foi construído com um o
 
 Desenvolvedores frequentemente precisam transformar dados JSON (respostas de API, exports, logs) em planilhas para análise rápida, relatórios ou compartilhamento com pessoas não técnicas. Isso geralmente significa escrever um script descartável ou colar os dados em um conversor online de confiança desconhecida — muitas vezes com dados sensíveis envolvidos.
 
-O DevTools resolve isso com uma ferramenta que roda **100% no navegador**: nada do que você cola ou envia sai do seu dispositivo.
+O Zyger Tools resolve isso com uma ferramenta que roda **100% no navegador**: nada do que você cola ou envia sai do seu dispositivo.
 
 ## Funcionalidades
 
@@ -24,16 +24,23 @@ O DevTools resolve isso com uma ferramenta que roda **100% no navegador**: nada 
   - Seleção de colunas antes da exportação (selecionar todas / desmarcar todas / individual).
   - Nome do arquivo de saída personalizável.
   - Limite de 10 MB no arquivo de entrada (processamento local).
+- **Endereço → Coordenadas**
+  - Cole um objeto JSON de endereço e receba latitude/longitude.
+  - Ignora campos vazios e não exige propriedades extras.
+  - Envia somente o endereço montado (nunca o JSON original) para o [Nominatim](https://nominatim.openstreetmap.org/) (OpenStreetMap), sem necessidade de API key ou backend.
+  - Botão para copiar o resultado com a Clipboard API nativa.
 - Alternância entre tema claro e escuro.
 - Outras ferramentas (JSON Formatter, CSV ↔ JSON, etc.) estão planejadas e aparecem como "Em breve" na página inicial, mas ainda não foram implementadas.
 
 ## Privacidade
 
-Todo o processamento acontece localmente no navegador:
+Todo o processamento do JSON → Excel acontece localmente no navegador:
 
 - Seu JSON nunca é enviado para nenhum servidor ou API de terceiros.
 - Nada é armazenado externamente ou usado para analytics.
 - Nenhum dado permanece salvo após fechar ou recarregar a página.
+
+Já o Address → Coordinates precisa enviar o endereço montado (nunca o JSON original) ao Nominatim para obter as coordenadas.
 
 ## Tecnologias
 
@@ -41,6 +48,7 @@ Todo o processamento acontece localmente no navegador:
 - TypeScript
 - SCSS
 - [SheetJS (xlsx)](https://sheetjs.com) para geração dos arquivos `.xlsx`
+- [Nominatim](https://nominatim.openstreetmap.org/) (OpenStreetMap) para geocoding, via `HttpClient` nativo do Angular
 
 Sem backend, sem banco de dados, sem autenticação, sem gerenciamento de estado global — nada disso é necessário para o que esta aplicação faz.
 
@@ -53,6 +61,7 @@ src/app/
   home/                 Página inicial com a lista de ferramentas
   tools/
     json-to-excel/       Funcionalidade JSON → Excel (componente + funções utilitárias puras)
+    address-to-coordinates/  Funcionalidade Address → Coordinates (componente + service de geocoding)
   shared/                Serviço de tema e tipos compartilhados
   app.routes.ts          Definição de rotas
 ```
@@ -74,7 +83,7 @@ A aplicação estará disponível em `http://localhost:4200`.
 npm test
 ```
 
-Os testes focam nas funções que possuem lógica real (`parseJson`, `toRows`, `flattenObject`, `getColumns`), cobrindo JSON válido/inválido, objeto único, array de objetos e achatamento de campos aninhados/arrays.
+Os testes focam nas funções que possuem lógica real (`parseJson`, `toRows`, `flattenObject`, `getColumns`, `buildAddressQuery`, `mapGeocodingResponse`), cobrindo JSON válido/inválido, objeto único, array de objetos, achatamento de campos aninhados/arrays e montagem/tradução do endereço de geocoding.
 
 ## Build
 

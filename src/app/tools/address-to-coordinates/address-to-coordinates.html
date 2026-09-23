@@ -1,0 +1,26 @@
+<h1>Endereço → Coordenadas</h1>
+<p class="tool-description">Cole um objeto JSON de endereço e obtenha sua latitude e longitude.</p>
+<p class="privacy-note">Os dados do endereço são enviados ao provedor de geocodificação para encontrar as coordenadas.</p>
+
+@if (errorMessage()) {
+  <p class="error-banner" role="alert">{{ errorMessage() }}</p>
+}
+
+<div class="input-section">
+  <label for="address-input" class="field-label">Entrada</label>
+  <textarea
+    id="address-input"
+    #addressInput
+    rows="10"
+    placeholder='{"city": "Manaus", "neighborhood": "Petrópolis", "number": "200", "postalCode": "69067520", "state": "AM", "street": "Rua Rio Nilo"}'
+  ></textarea>
+  <button type="button" [disabled]="isLoading()" (click)="getCoordinates(addressInput)">Obter coordenadas</button>
+</div>
+
+@if (result()) {
+  <div class="output-section">
+    <span class="field-label">Saída</span>
+    <pre class="result">{{ resultJson() }}</pre>
+    <button type="button" (click)="copyResult()">{{ copied() ? 'Copiado!' : 'Copiar' }}</button>
+  </div>
+}
