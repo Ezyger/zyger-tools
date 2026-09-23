@@ -1,94 +1,219 @@
-# DevTools
+# 🧰 Zyger Tools
 
-[Leia em Português (Brasil)](README.pt-BR.md)
+[🇧🇷 Leia em Português](README.pt-BR.md)
 
-A small, focused web application that brings together simple, privacy-first tools for developers. The first tool available is **JSON → Excel**, a converter that turns JSON data into `.xlsx` spreadsheets entirely in the browser.
+**A growing collection of simple tools for everyday development tasks.**
 
-This project is part of my professional portfolio and was built with an explicit goal: **simplicity over cleverness**. Every design decision favors readable, explainable code over architectural sophistication.
+Zyger Tools brings together small and useful utilities for developers in one place, with a focus on **simplicity, usability, and privacy**.
 
-## Problem it solves
+The project was created from real everyday needs: instead of repeatedly writing temporary scripts or relying on third-party websites for small tasks, the idea is to have a collection of tools that are quick to access, easy to understand, and safe to use.
 
-Developers frequently need to turn JSON payloads (API responses, exports, logs) into spreadsheets for non-technical stakeholders, quick analysis, or reporting. Doing this usually means writing a throwaway script or pasting data into an online converter of unknown trustworthiness — often the data being converted is sensitive.
+The first available tool is **JSON → Excel**.
 
-DevTools solves this with a tool that runs **100% client-side**: nothing you paste or upload ever leaves your browser.
+---
 
-## Features
+## 🛠️ Available tools
 
-- **JSON → Excel**
-  - Upload a `.json` file, drag-and-drop it, or paste JSON directly.
-  - Validates JSON syntax and structure, with clear error messages.
-  - Supports a single object (treated as one row) or an array of objects.
-  - Flattens nested objects into columns using dot notation (e.g. `customer.city`).
-  - Simple arrays become a comma-separated string; arrays of objects are kept as JSON text.
-  - Preview table (up to 50 rows) showing total record and field counts.
-  - Column selection before export (select all / deselect all / individual toggle).
-  - Custom output file name.
-  - 10 MB input size limit (client-side processing only).
-- Light/dark theme toggle.
-- Additional tools (JSON Formatter, CSV ↔ JSON, etc.) are planned and shown as "coming soon" on the home page, but not implemented yet.
+### 📊 JSON → Excel
 
-## Privacy
+Convert JSON data into `.xlsx` spreadsheets directly in your browser.
 
-All processing happens locally in your browser:
+You can:
 
-- Your JSON is never sent to any server or third-party API.
-- Nothing is stored externally or used for analytics.
-- No data persists after closing or reloading the page.
+- Upload a `.json` file
+- Drag and drop a JSON file
+- Paste JSON directly
+- Preview the converted data
+- Select which columns to export
+- Export the result to Excel
+- Choose the output file name
 
-## Technology
+The converter supports:
 
-- [Angular](https://angular.dev) (standalone components, signals, the new `@if`/`@for` control-flow syntax)
+- Single JSON objects
+- Arrays of objects
+- Nested objects using dot notation
+- Simple arrays
+- Arrays containing objects
+- Files up to 10 MB
+
+Example:
+
+```json
+{
+  "pointId": 73,
+  "customer": {
+    "name": "John",
+    "city": "Curitiba"
+  }
+}
+```
+
+Becomes:
+
+| pointId | customer.name | customer.city |
+|--------:|---------------|---------------|
+| 73 | John | Curitiba |
+
+---
+
+## 🔒 Privacy first
+
+Whenever possible, Zyger Tools processes data **directly in your browser**.
+
+For JSON → Excel:
+
+- Your files are never uploaded to a server
+- No data is sent to third-party APIs
+- No input data is stored
+- No analytics are performed on your content
+- Reloading or closing the page clears the data
+
+**Your data stays on your device.**
+
+---
+
+## 🚧 Coming next
+
+Zyger Tools is designed to grow gradually as new useful tools are needed.
+
+Planned tools include:
+
+- JSON Formatter / Viewer
+- JSON → CSV
+- CSV → JSON
+- Excel → JSON
+- Timestamp Converter
+- Base64 Encode / Decode
+
+The goal is not to have hundreds of tools, but to provide a small collection of utilities that are genuinely useful.
+
+---
+
+## 💻 Technology
+
+The application is currently built with:
+
+- Angular
 - TypeScript
 - SCSS
-- [SheetJS (xlsx)](https://sheetjs.com) for generating `.xlsx` files
+- SheetJS (`xlsx`)
 
-No backend, no database, no authentication, no global state management — none of that is needed for what this app does.
+The Angular application uses standalone components, signals and modern control-flow syntax.
 
-> **Note on the `xlsx` dependency:** the version published on the public npm registry is outdated and flagged with known vulnerabilities (prototype pollution and ReDoS) with no fix available there. This project installs the patched build directly from the [official SheetJS CDN](https://cdn.sheetjs.com/), as recommended by the maintainers, resulting in zero known vulnerabilities (`npm audit`).
+There is currently no backend because the available tools do not require one.
 
-## Project structure
+### SheetJS
 
-```
+The `xlsx` package available through the public npm registry is outdated. This project uses the current SheetJS Community Edition distribution provided by the official SheetJS CDN.
+
+This also avoids known vulnerabilities present in older npm releases.
+
+---
+
+## 🏗️ Project structure
+
+The project intentionally keeps its architecture simple:
+
+```text
 src/app/
-  home/                 Home page with the tool list
-  tools/
-    json-to-excel/       JSON → Excel feature (component + pure utility functions)
-  shared/                Theme service and shared types
-  app.routes.ts          Route definitions
+├── home/
+├── tools/
+│   └── json-to-excel/
+├── shared/
+└── app.routes.ts
 ```
 
-No repository/facade/use-case/adapter layers were introduced — the app is small enough that they would only add indirection without real benefit.
+Each tool is implemented as an independent feature, making it possible to add new utilities without introducing unnecessary architectural complexity.
 
-## Getting started
+The project follows a simple rule:
+
+> **Prefer readable and maintainable code over unnecessary abstraction.**
+
+---
+
+## 🚀 Getting started
+
+Clone the repository:
+
+```bash
+git clone https://github.com/Ezyger/zyger-tools.git
+cd zyger-tools
+```
+
+Install the dependencies:
 
 ```bash
 npm install
+```
+
+Start the development server:
+
+```bash
 npm start
 ```
 
-The app will be available at `http://localhost:4200`.
+The application will be available at:
 
-## Running tests
+```text
+http://localhost:4200
+```
+
+---
+
+## 🧪 Tests
+
+Run the test suite with:
 
 ```bash
 npm test
 ```
 
-Tests focus on the functions that contain actual logic (`parseJson`, `toRows`, `flattenObject`, `getColumns`), covering valid/invalid JSON, single objects, arrays of objects, and nested/array field flattening.
+Tests focus primarily on code that contains actual business logic, including:
 
-## Building
+- JSON parsing
+- JSON validation
+- Object flattening
+- Column detection
+- Arrays
+- Nested structures
+
+---
+
+## 📦 Build
+
+Create a production build with:
 
 ```bash
 npm run build
 ```
 
-## Roadmap
+---
 
-Planned tools, not yet implemented:
+## 🗺️ Roadmap
 
-- JSON Formatter / Viewer
-- JSON → CSV / CSV → JSON
-- Excel → JSON
-- Timestamp Converter
-- Base64 Encode / Decode
+### Tools
 
+- [x] JSON → Excel
+- [ ] JSON Formatter / Viewer
+- [ ] JSON → CSV
+- [ ] CSV → JSON
+- [ ] Excel → JSON
+- [ ] Timestamp Converter
+- [ ] Base64 Encode / Decode
+
+### Project
+
+- [ ] Public deployment
+- [ ] Improve automated test coverage
+- [ ] Add new tools based on real use cases
+
+---
+
+## 👨‍💻 Author
+
+**Eduardo Zyger**
+
+Full-Stack Developer | Angular • Ionic • Node.js • TypeScript
+
+[LinkedIn](https://www.linkedin.com/in/ezyger/) • [GitHub](https://github.com/Ezyger)
