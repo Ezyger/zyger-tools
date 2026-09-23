@@ -41,7 +41,7 @@ Example:
 
 ```json
 {
-  "pointId": 73,
+  "id": 73,
   "customer": {
     "name": "John",
     "city": "Curitiba"
@@ -51,7 +51,7 @@ Example:
 
 Becomes:
 
-| pointId | customer.name | customer.city |
+| id | customer.name | customer.city |
 |--------:|---------------|---------------|
 | 73 | John | Curitiba |
 
