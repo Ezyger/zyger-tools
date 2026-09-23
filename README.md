@@ -1,59 +1,94 @@
-# ZygerTools
+# DevTools
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.37.
+[Leia em Português (Brasil)](README.pt-BR.md)
 
-## Development server
+A small, focused web application that brings together simple, privacy-first tools for developers. The first tool available is **JSON → Excel**, a converter that turns JSON data into `.xlsx` spreadsheets entirely in the browser.
 
-To start a local development server, run:
+This project is part of my professional portfolio and was built with an explicit goal: **simplicity over cleverness**. Every design decision favors readable, explainable code over architectural sophistication.
 
-```bash
-ng serve
+## Problem it solves
+
+Developers frequently need to turn JSON payloads (API responses, exports, logs) into spreadsheets for non-technical stakeholders, quick analysis, or reporting. Doing this usually means writing a throwaway script or pasting data into an online converter of unknown trustworthiness — often the data being converted is sensitive.
+
+DevTools solves this with a tool that runs **100% client-side**: nothing you paste or upload ever leaves your browser.
+
+## Features
+
+- **JSON → Excel**
+  - Upload a `.json` file, drag-and-drop it, or paste JSON directly.
+  - Validates JSON syntax and structure, with clear error messages.
+  - Supports a single object (treated as one row) or an array of objects.
+  - Flattens nested objects into columns using dot notation (e.g. `customer.city`).
+  - Simple arrays become a comma-separated string; arrays of objects are kept as JSON text.
+  - Preview table (up to 50 rows) showing total record and field counts.
+  - Column selection before export (select all / deselect all / individual toggle).
+  - Custom output file name.
+  - 10 MB input size limit (client-side processing only).
+- Light/dark theme toggle.
+- Additional tools (JSON Formatter, CSV ↔ JSON, etc.) are planned and shown as "coming soon" on the home page, but not implemented yet.
+
+## Privacy
+
+All processing happens locally in your browser:
+
+- Your JSON is never sent to any server or third-party API.
+- Nothing is stored externally or used for analytics.
+- No data persists after closing or reloading the page.
+
+## Technology
+
+- [Angular](https://angular.dev) (standalone components, signals, the new `@if`/`@for` control-flow syntax)
+- TypeScript
+- SCSS
+- [SheetJS (xlsx)](https://sheetjs.com) for generating `.xlsx` files
+
+No backend, no database, no authentication, no global state management — none of that is needed for what this app does.
+
+> **Note on the `xlsx` dependency:** the version published on the public npm registry is outdated and flagged with known vulnerabilities (prototype pollution and ReDoS) with no fix available there. This project installs the patched build directly from the [official SheetJS CDN](https://cdn.sheetjs.com/), as recommended by the maintainers, resulting in zero known vulnerabilities (`npm audit`).
+
+## Project structure
+
+```
+src/app/
+  home/                 Home page with the tool list
+  tools/
+    json-to-excel/       JSON → Excel feature (component + pure utility functions)
+  shared/                Theme service and shared types
+  app.routes.ts          Route definitions
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+No repository/facade/use-case/adapter layers were introduced — the app is small enough that they would only add indirection without real benefit.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Getting started
 
 ```bash
-ng generate component component-name
+npm install
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+The app will be available at `http://localhost:4200`.
+
+## Running tests
 
 ```bash
-ng generate --help
+npm test
 ```
+
+Tests focus on the functions that contain actual logic (`parseJson`, `toRows`, `flattenObject`, `getColumns`), covering valid/invalid JSON, single objects, arrays of objects, and nested/array field flattening.
 
 ## Building
 
-To build the project run:
-
 ```bash
-ng build
+npm run build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Roadmap
 
-## Running unit tests
+Planned tools, not yet implemented:
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+- JSON Formatter / Viewer
+- JSON → CSV / CSV → JSON
+- Excel → JSON
+- Timestamp Converter
+- Base64 Encode / Decode
 
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

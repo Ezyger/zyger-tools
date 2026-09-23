@@ -1,0 +1,87 @@
+<h1>JSON → Excel</h1>
+<p class="tool-description">
+  Converta um JSON em uma planilha Excel. Tudo acontece no seu
+  navegador — seus dados não são enviados para nenhum servidor.
+</p>
+
+@if (errorMessage()) {
+  <p class="error-banner" role="alert">{{ errorMessage() }}</p>
+}
+
+@if (!hasData()) {
+  <section class="input-section">
+    <div
+      class="dropzone"
+      [class.active]="isDragOver()"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)">
+      <label for="json-file-input" class="label">
+        Arraste um arquivo .json aqui ou clique para selecionar
+      </label>
+      <input id="json-file-input" type="file" accept=".json,application/json" (change)="onFileInputChange($event)" />
+    </div>
+
+    <div class="paste-area">
+      <label for="json-paste" class="field-label">Ou cole o JSON diretamente</label>
+      <textarea id="json-paste" #pasteInput rows="8" placeholder="Cole aqui o conteúdo JSON..."></textarea>
+      <button type="button" class="button-inline" (click)="onProcessPastedText(pasteInput)">Processar JSON colado</button>
+    </div>
+  </section>
+} @else {
+  <section class="results-section">
+    <div class="summary">
+      <span>{{ rows().length }} registro(s)</span>
+      <span>{{ columns().length }} campo(s)</span>
+      <button type="button" class="button-secondary align-end" (click)="reset()">Limpar e começar novamente</button>
+    </div>
+
+    <fieldset class="column-picker">
+      <legend>Colunas para exportar</legend>
+      <div class="actions">
+        <button type="button" class="button-secondary button-small" (click)="selectAllColumns()">Selecionar todas</button>
+        <button type="button" class="button-secondary button-small" (click)="deselectAllColumns()">Desmarcar todas</button>
+      </div>
+      <div class="list">
+        @for (column of columns(); track column.name) {
+          <label class="item">
+            <input type="checkbox" [checked]="column.selected" (change)="toggleColumn(column.name)" />
+            {{ column.name }}
+          </label>
+        }
+      </div>
+    </fieldset>
+
+    <div class="preview">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              @for (column of columns(); track column.name) {
+                <th>{{ column.name }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of previewRows(); track $index) {
+              <tr>
+                @for (column of columns(); track column.name) {
+                  <td>{{ row[column.name] }}</td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      @if (rows().length > previewRows().length) {
+        <p class="note">Mostrando {{ previewRows().length }} de {{ rows().length }} registros.</p>
+      }
+    </div>
+
+    <div class="export-actions">
+      <label for="file-name" class="field-label">Nome do arquivo</label>
+      <input id="file-name" type="text" [value]="fileName()" (input)="onFileNameChange($event)" />
+      <button type="button" (click)="exportFile()">Exportar para Excel</button>
+    </div>
+  </section>
+}

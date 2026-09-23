@@ -9,8 +9,9 @@
     "test": "ng test"
   },
   "prettier": {
-    "printWidth": 100,
+    "printWidth": 130,
     "singleQuote": true,
+    "bracketSameLine": true,
     "overrides": [
       {
         "files": "*.html",
@@ -30,6 +31,7 @@
     "@angular/router": "^20.3.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {

@@ -1,1 +1,65 @@
 /* You can add global styles to this file, and also import other style files */
+
+:root {
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+  --radius: 8px;
+}
+
+[data-theme='light'] {
+  --color-bg: #ffffff;
+  --color-bg-subtle: #f5f6f8;
+  --color-surface: #ffffff;
+  --color-border: #e1e4e8;
+  --color-text: #1a1d21;
+  --color-text-muted: #5c6370;
+  --color-primary: #2563eb;
+  --color-primary-contrast: #ffffff;
+  --color-danger: #b3261e;
+  --color-danger-bg: #fdecea;
+}
+
+[data-theme='dark'] {
+  --color-bg: #14161a;
+  --color-bg-subtle: #1c1f24;
+  --color-surface: #1c1f24;
+  --color-border: #2c3038;
+  --color-text: #e8e9eb;
+  --color-text-muted: #9aa0a8;
+  --color-primary: #5b8def;
+  --color-primary-contrast: #0b0d10;
+  --color-danger: #ff6b62;
+  --color-danger-bg: #3a1f1e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+}
+
+button {
+  font-family: inherit;
+}
+
+a {
+  color: var(--color-primary);
+}

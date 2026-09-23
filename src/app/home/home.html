@@ -1,0 +1,22 @@
+<section class="hero">
+  <h1>ZygerTools</h1>
+  <p class="description">Pequenas ferramentas para desenvolvedores manipularem dados no dia a dia.</p>
+  <p class="privacy">Seus dados são processados localmente e não saem do seu dispositivo.</p>
+</section>
+
+<section class="tool-list" aria-label="Ferramentas disponíveis">
+  @for (tool of tools; track tool.id) {
+    @if (tool.route) {
+      <a class="tool-card" [routerLink]="tool.route">
+        <h2>{{ tool.name }}</h2>
+        <p class="card-text">{{ tool.description }}</p>
+      </a>
+    } @else {
+      <div class="tool-card disabled">
+        <h2>{{ tool.name }}</h2>
+        <p class="card-text">{{ tool.description }}</p>
+        <span class="badge">Em breve</span>
+      </div>
+    }
+  }
+</section>
