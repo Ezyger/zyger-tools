@@ -1,0 +1,12 @@
+{
+  "hosting": {
+    "public": "dist/zyger-tools/browser",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
