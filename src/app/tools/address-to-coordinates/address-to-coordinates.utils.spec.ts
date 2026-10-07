@@ -37,6 +37,19 @@ describe('buildAddressQuery', () => {
     expect(query).toBe('Rua Rio Nilo, 200, Petrópolis, Manaus, AM, 69067520, Brazil');
   });
 
+  it('accepts a numeric number/postalCode field pasted without quotes', () => {
+    const query = buildAddressQuery({
+      city: 'Manaus',
+      neighborhood: 'Petrópolis',
+      number: 200,
+      postalCode: 69067520,
+      state: 'AM',
+      street: 'Rua Rio Nilo',
+    });
+
+    expect(query).toBe('Rua Rio Nilo, 200, Petrópolis, Manaus, AM, 69067520, Brazil');
+  });
+
   it('ignores empty fields', () => {
     const query = buildAddressQuery({ city: 'Manaus', state: '', street: 'Rua Rio Nilo' });
     expect(query).toBe('Rua Rio Nilo, Manaus, Brazil');

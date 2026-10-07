@@ -42,9 +42,7 @@ export class AddressToCoordinates {
    */
   public copyResult(): void {
     const json = this.resultJson();
-    if (!json) {
-      return;
-    }
+    if (!json) return;
     void navigator.clipboard.writeText(json);
     this.copied.set(true);
     setTimeout(() => this.copied.set(false), 1500);

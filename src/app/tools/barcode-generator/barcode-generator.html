@@ -1,0 +1,112 @@
+<h1>Gerador de Código de Barras</h1>
+<p class="tool-description">
+  Gere códigos de barras GS1-128 e outros formatos comuns, individualmente ou em lote. Tudo acontece
+  no seu navegador — seus dados não são enviados para nenhum servidor.
+</p>
+
+<div class="mode-switch">
+  <button type="button" [class.button-secondary]="isBatchMode()" (click)="setBatchMode(false)">Código único</button>
+  <button type="button" [class.button-secondary]="!isBatchMode()" (click)="setBatchMode(true)">Geração em lote</button>
+</div>
+
+@if (errorMessage()) {
+  <p class="error-banner" role="alert">{{ errorMessage() }}</p>
+}
+
+<div class="format-section">
+  <label for="format-select" class="field-label">Formato</label>
+  <select id="format-select" [value]="bcid()" (change)="onFormatChange($event)">
+    @for (format of formats; track format.bcid) {
+      <option [value]="format.bcid">{{ format.label }}</option>
+    }
+  </select>
+  <p class="format-hint">{{ selectedFormat().hint }}</p>
+</div>
+
+@if (!isBatchMode()) {
+  <section class="input-section">
+    <label for="barcode-text" class="field-label">Dados a codificar</label>
+    <textarea
+      id="barcode-text"
+      rows="3"
+      [placeholder]="selectedFormat().placeholder"
+      [value]="text()"
+      (input)="onTextChange($event)"></textarea>
+
+    <div class="actions">
+      <label for="size-select" class="field-label">Tamanho</label>
+      <select id="size-select" [value]="scale()" (change)="onScaleChange($event)">
+        @for (size of sizes; track size.value) {
+          <option [value]="size.value">{{ size.label }}</option>
+        }
+      </select>
+
+      <label class="checkbox-label">
+        <input type="checkbox" [checked]="includeText()" (change)="onIncludeTextChange($event)" />
+        Exibir texto legível
+      </label>
+
+      <button type="button" (click)="generate()">Gerar código</button>
+      <button type="button" class="button-secondary" (click)="clear()">Limpar</button>
+    </div>
+  </section>
+
+  @if (previewDataUrl()) {
+    <section class="preview-section">
+      <img class="preview-image" [src]="previewDataUrl()" alt="Pré-visualização do código de barras gerado" />
+      <div class="actions">
+        <button type="button" (click)="downloadPng()">Baixar PNG</button>
+        <button type="button" class="button-secondary" (click)="downloadSvg()">Baixar SVG</button>
+      </div>
+    </section>
+  }
+} @else {
+  <section class="input-section">
+    <label for="barcode-batch-text" class="field-label">Valores (um por linha)</label>
+    <textarea
+      id="barcode-batch-text"
+      rows="8"
+      [placeholder]="selectedFormat().placeholder + '\n' + selectedFormat().placeholder"
+      [value]="batchText()"
+      (input)="onBatchTextChange($event)"></textarea>
+
+    <div class="actions">
+      <label for="batch-size-select" class="field-label">Tamanho</label>
+      <select id="batch-size-select" [value]="scale()" (change)="onScaleChange($event)">
+        @for (size of sizes; track size.value) {
+          <option [value]="size.value">{{ size.label }}</option>
+        }
+      </select>
+
+      <label class="checkbox-label">
+        <input type="checkbox" [checked]="includeText()" (change)="onIncludeTextChange($event)" />
+        Exibir texto legível
+      </label>
+
+      <button type="button" (click)="generateBatch()">Gerar lote</button>
+      <button type="button" class="button-secondary" (click)="clearBatch()">Limpar</button>
+    </div>
+  </section>
+
+  @if (batchItems().length > 0) {
+    <section class="batch-section">
+      <div class="summary">
+        <span>{{ batchItems().length }} código(s) gerado(s)</span>
+        <button type="button" class="button-secondary align-end" (click)="downloadBatchZip()">Baixar todos (.zip)</button>
+      </div>
+
+      <div class="batch-list">
+        @for (item of batchItems(); track item.value) {
+          <div class="batch-item" [class.error]="item.error">
+            @if (item.dataUrl) {
+              <img class="thumb" [src]="item.dataUrl" alt="Código de barras de {{ item.value }}" />
+            } @else {
+              <p class="thumb-error">{{ item.error }}</p>
+            }
+            <p class="thumb-label">{{ item.value }}</p>
+          </div>
+        }
+      </div>
+    </section>
+  }
+}

@@ -1,0 +1,42 @@
+<h1>Formatador de JSON</h1>
+<p class="tool-description">
+  Formate, valide ou minifique um JSON. Tudo acontece no seu
+  navegador — seus dados não são enviados para nenhum servidor.
+</p>
+
+@if (errorMessage()) {
+  <p class="error-banner" role="alert">{{ errorMessage() }}</p>
+}
+
+<section class="input-section">
+  <label for="json-input" class="field-label">JSON de entrada</label>
+  <textarea
+    id="json-input"
+    rows="12"
+    placeholder="Cole aqui o conteúdo JSON..."
+    [value]="inputText()"
+    (input)="onInputChange($event)"></textarea>
+
+  <div class="actions">
+    <label for="indent-select" class="field-label">Indentação</label>
+    <select id="indent-select" [value]="indent()" (change)="onIndentChange($event)">
+      <option value="2">2 espaços</option>
+      <option value="4">4 espaços</option>
+      <option value="tab">Tab</option>
+    </select>
+    <button type="button" (click)="format()">Formatar</button>
+    <button type="button" class="button-secondary" (click)="minify()">Minificar</button>
+    <button type="button" class="button-secondary" (click)="clear()">Limpar</button>
+  </div>
+</section>
+
+@if (outputText()) {
+  <section class="output-section">
+    <div class="summary">
+      <span class="field-label">Resultado</span>
+      <button type="button" class="button-secondary button-small align-end" (click)="copyToClipboard()">Copiar</button>
+      <button type="button" class="button-secondary button-small" (click)="download()">Baixar .json</button>
+    </div>
+    <textarea class="output" rows="12" readonly [value]="outputText()"></textarea>
+  </section>
+}

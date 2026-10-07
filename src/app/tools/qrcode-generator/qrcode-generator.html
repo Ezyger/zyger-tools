@@ -1,0 +1,106 @@
+<h1>Gerador de QR Code</h1>
+<p class="tool-description">
+  Gere QR Codes a partir de um texto ou URL, individualmente ou em lote. Tudo acontece no seu
+  navegador — seus dados não são enviados para nenhum servidor.
+</p>
+
+<div class="mode-switch">
+  <button type="button" [class.button-secondary]="isBatchMode()" (click)="setBatchMode(false)">Código único</button>
+  <button type="button" [class.button-secondary]="!isBatchMode()" (click)="setBatchMode(true)">Geração em lote</button>
+</div>
+
+@if (errorMessage()) {
+  <p class="error-banner" role="alert">{{ errorMessage() }}</p>
+}
+
+@if (!isBatchMode()) {
+  <section class="input-section">
+    <label for="qr-text" class="field-label">Texto ou URL</label>
+    <textarea
+      id="qr-text"
+      rows="4"
+      placeholder="Ex.: https://meusite.com.br"
+      [value]="text()"
+      (input)="onTextChange($event)"></textarea>
+
+    <div class="actions">
+      <label for="eclevel-select" class="field-label">Correção de erro</label>
+      <select id="eclevel-select" [value]="eclevel()" (change)="onEclevelChange($event)">
+        @for (level of errorCorrectionLevels; track level.value) {
+          <option [value]="level.value">{{ level.label }}</option>
+        }
+      </select>
+
+      <label for="size-select" class="field-label">Tamanho</label>
+      <select id="size-select" [value]="scale()" (change)="onScaleChange($event)">
+        @for (size of sizes; track size.value) {
+          <option [value]="size.value">{{ size.label }}</option>
+        }
+      </select>
+
+      <button type="button" (click)="generate()">Gerar QR Code</button>
+      <button type="button" class="button-secondary" (click)="clear()">Limpar</button>
+    </div>
+  </section>
+
+  @if (previewDataUrl()) {
+    <section class="preview-section">
+      <img class="preview-image" [src]="previewDataUrl()" alt="Pré-visualização do QR Code gerado" />
+      <div class="actions">
+        <button type="button" (click)="downloadPng()">Baixar PNG</button>
+        <button type="button" class="button-secondary" (click)="downloadSvg()">Baixar SVG</button>
+      </div>
+    </section>
+  }
+} @else {
+  <section class="input-section">
+    <label for="qr-batch-text" class="field-label">Valores (um por linha)</label>
+    <textarea
+      id="qr-batch-text"
+      rows="8"
+      placeholder="https://meusite.com.br/produto/1&#10;https://meusite.com.br/produto/2&#10;https://meusite.com.br/produto/3"
+      [value]="batchText()"
+      (input)="onBatchTextChange($event)"></textarea>
+
+    <div class="actions">
+      <label for="batch-eclevel-select" class="field-label">Correção de erro</label>
+      <select id="batch-eclevel-select" [value]="eclevel()" (change)="onEclevelChange($event)">
+        @for (level of errorCorrectionLevels; track level.value) {
+          <option [value]="level.value">{{ level.label }}</option>
+        }
+      </select>
+
+      <label for="batch-size-select" class="field-label">Tamanho</label>
+      <select id="batch-size-select" [value]="scale()" (change)="onScaleChange($event)">
+        @for (size of sizes; track size.value) {
+          <option [value]="size.value">{{ size.label }}</option>
+        }
+      </select>
+
+      <button type="button" (click)="generateBatch()">Gerar lote</button>
+      <button type="button" class="button-secondary" (click)="clearBatch()">Limpar</button>
+    </div>
+  </section>
+
+  @if (batchItems().length > 0) {
+    <section class="batch-section">
+      <div class="summary">
+        <span>{{ batchItems().length }} código(s) gerado(s)</span>
+        <button type="button" class="button-secondary align-end" (click)="downloadBatchZip()">Baixar todos (.zip)</button>
+      </div>
+
+      <div class="batch-grid">
+        @for (item of batchItems(); track item.value) {
+          <div class="batch-item" [class.error]="item.error">
+            @if (item.dataUrl) {
+              <img class="thumb" [src]="item.dataUrl" alt="QR Code de {{ item.value }}" />
+            } @else {
+              <p class="thumb-error">{{ item.error }}</p>
+            }
+            <p class="thumb-label">{{ item.value }}</p>
+          </div>
+        }
+      </div>
+    </section>
+  }
+}

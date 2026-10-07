@@ -1,18 +1,28 @@
+
+/**
+ * Representa os campos de entrada de um endereço.
+ */
 export interface AddressInput {
   city?: string;
   complement?: string;
   neighborhood?: string;
-  number?: string;
-  postalCode?: string;
+  number?: string | number;
+  postalCode?: string | number;
   state?: string;
   street?: string;
 }
 
-export type Coordinates = {
+/**
+ * Representa as coordenadas geográficas de um endereço.
+ */
+export interface Coordinates {
   latitude: string;
   longitude: string;
-};
+}
 
+/**
+ * Resultado retornado pelo Nominatim para um endereço geocodificado.
+ */
 export interface NominatimResult {
   lat: string;
   lon: string;
@@ -41,6 +51,19 @@ export function parseAddressInput(text: string): AddressInput {
 }
 
 /**
+ * Normaliza um valor de campo de endereço (string, número ou vazio) para uma string sem espaços nas pontas.
+ * @param value O valor bruto do campo, que pode vir como string, número, nulo ou indefinido.
+ * @returns A string normalizada, ou undefined se o valor for vazio/ausente.
+ */
+function normalizeField(value: string | number | undefined | null): string | undefined {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+  const text = String(value).trim();
+  return text === '' ? undefined : text;
+}
+
+/**
  * Monta a string de busca a partir dos campos preenchidos do endereço, assumindo Brasil como país.
  * @param address O objeto de endereço.
  * @returns A string de busca para o geocoding.
@@ -49,10 +72,15 @@ export function parseAddressInput(text: string): AddressInput {
 export function buildAddressQuery(address: AddressInput): string {
   // Bases de CEP (Correios) às vezes incluem um sufixo de faixa (ex.: "- de 3020 ao fim - lado par"),
   // que não é um nome de rua e impede o geocoding de encontrar o endereço.
-  const street = address.street?.split(' - ')[0]?.trim();
-  const parts = [street, address.number, address.neighborhood, address.city, address.state, address.postalCode].filter(
-    (part): part is string => !!part && part.trim() !== '',
-  );
+  const street = normalizeField(address.street)?.split(' - ')[0]?.trim();
+  const parts = [
+    street,
+    normalizeField(address.number),
+    normalizeField(address.neighborhood),
+    normalizeField(address.city),
+    normalizeField(address.state),
+    normalizeField(address.postalCode),
+  ].filter((part): part is string => !!part);
 
   if (parts.length === 0) {
     throw new Error('Address not found.');
