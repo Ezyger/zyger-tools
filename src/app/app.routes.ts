@@ -7,10 +7,6 @@ export const routes: Routes = [
     loadComponent: () => import('./tools/json-to-excel/json-to-excel').then((m) => m.JsonToExcel),
   },
   {
-    path: 'tools/address-to-coordinates',
-    loadComponent: () => import('./tools/address-to-coordinates/address-to-coordinates').then((m) => m.AddressToCoordinates),
-  },
-  {
     path: 'tools/json-formatter',
     loadComponent: () => import('./tools/json-formatter/json-formatter').then((m) => m.JsonFormatter),
   },

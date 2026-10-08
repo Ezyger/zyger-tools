@@ -17,12 +17,6 @@ export class Home {
       route: '/tools/json-to-excel',
     },
     {
-      id: 'address-to-coordinates',
-      name: 'Endereço → Coordenadas',
-      description: 'Converta um objeto JSON de endereço em latitude e longitude.',
-      route: '/tools/address-to-coordinates',
-    },
-    {
       id: 'json-formatter',
       name: 'Formatador de JSON',
       description: 'Formate, valide ou minifique um JSON diretamente no navegador.',

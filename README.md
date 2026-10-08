@@ -8,7 +8,7 @@ Zyger Tools brings together small and useful utilities for developers in one pla
 
 The project was created from real everyday needs: instead of repeatedly writing temporary scripts or relying on third-party websites for small tasks, the idea is to have a collection of tools that are quick to access, easy to understand, and safe to use.
 
-The available tools are **JSON → Excel** and **Address → Coordinates**.
+The available tools are **JSON → Excel**, **JSON Formatter**, **QR Code Generator** and **Barcode Generator**.
 
 ---
 
@@ -57,56 +57,63 @@ Becomes:
 
 ---
 
-### 📍 Address → Coordinates
+### 🧹 JSON Formatter
 
-Paste an address JSON object and get its latitude and longitude.
+Format, minify or validate a JSON document directly in your browser.
 
-Input:
+You can:
 
-```json
-{
-  "city": "Manaus",
-  "complement": "",
-  "neighborhood": "Petrópolis",
-  "number": "200",
-  "postalCode": "69067520",
-  "state": "AM",
-  "street": "Rua Rio Nilo"
-}
-```
+- Paste any JSON text
+- Format it with 2 spaces, 4 spaces or tab indentation
+- Minify it, removing all unnecessary whitespace
+- Copy the result to the clipboard
+- Download the result as a `.json` file
 
-Output:
+Syntax errors are reported with a clear, friendly message instead of a raw parser error.
 
-```json
-{
-  "latitude": "-3.10342",
-  "longitude": "-60.01268"
-}
-```
+---
 
-Unlike JSON → Excel, this tool needs to send the assembled address to a geocoding provider ([Nominatim](https://nominatim.openstreetmap.org/), OpenStreetMap) to obtain the coordinates — it does not run fully offline.
+### 📱 QR Code Generator
+
+Generate QR Codes from text or URLs, one at a time or in batch.
+
+You can:
+
+- Choose an error correction level (L, M, Q or H)
+- Choose an output size
+- Preview the generated QR Code
+- Download it as PNG or SVG
+- Switch to batch mode to generate up to 300 QR Codes at once (one value per line) and download them all as a single `.zip` file
+
+---
+
+### 📦 Barcode Generator
+
+Generate barcodes in several common formats, one at a time or in batch.
+
+Supported formats: **GS1-128**, Code 128, EAN-13, EAN-8, UPC-A, Code 39, Code 93, ITF (Interleaved 2 of 5), Codabar, PDF417 and Data Matrix.
+
+You can:
+
+- Choose the barcode format and output size
+- Optionally show the human-readable text below the barcode
+- Preview the generated barcode
+- Download it as PNG or SVG
+- Switch to batch mode to generate up to 300 barcodes at once (one value per line) and download them all as a single `.zip` file
 
 ---
 
 ## 🔒 Privacy first
 
-Whenever possible, Zyger Tools processes data **directly in your browser**.
+Zyger Tools processes **all data directly in your browser**, for every tool:
 
-For JSON → Excel:
-
-- Your files are never uploaded to a server
+- Your files and input data are never uploaded to any server
 - No data is sent to third-party APIs
 - No input data is stored
 - No analytics are performed on your content
 - Reloading or closing the page clears the data
 
-For Address → Coordinates:
-
-- Only the assembled address (never the original JSON) is sent to the geocoding provider
-- No input data is stored
-- No analytics are performed on your content
-
-**Your data stays on your device, except when a tool explicitly needs a third-party service to work.**
+**Your data never leaves your device.**
 
 ---
 
@@ -116,7 +123,6 @@ Zyger Tools is designed to grow gradually as new useful tools are needed.
 
 Planned tools include:
 
-- JSON Formatter / Viewer
 - JSON → CSV
 - CSV → JSON
 - Excel → JSON
@@ -135,7 +141,8 @@ The application is currently built with:
 - TypeScript
 - SCSS
 - SheetJS (`xlsx`)
-- Nominatim (OpenStreetMap) for geocoding, via Angular's native `HttpClient`
+- bwip-js, for QR Code and barcode rendering
+- JSZip, for batch downloads as `.zip` files
 
 The Angular application uses standalone components, signals and modern control-flow syntax.
 
@@ -158,12 +165,14 @@ src/app/
 ├── home/
 ├── tools/
 │   ├── json-to-excel/
-│   └── address-to-coordinates/
+│   ├── json-formatter/
+│   ├── qrcode-generator/
+│   └── barcode-generator/
 ├── shared/
 └── app.routes.ts
 ```
 
-Each tool is implemented as an independent feature, making it possible to add new utilities without introducing unnecessary architectural complexity.
+Each tool is implemented as an independent feature, making it possible to add new utilities without introducing unnecessary architectural complexity. Shared logic reused across the QR Code and barcode tools (rendering, downloads) lives in `shared/`.
 
 The project follows a simple rule:
 
@@ -210,12 +219,11 @@ npm test
 
 Tests focus primarily on code that contains actual business logic, including:
 
-- JSON parsing
-- JSON validation
-- Object flattening
-- Column detection
-- Arrays
-- Nested structures
+- JSON parsing, validation and formatting
+- Object flattening and column detection
+- Arrays and nested structures
+- QR Code and barcode option building
+- Batch parsing and file name sanitization
 
 ---
 
@@ -234,7 +242,9 @@ npm run build
 ### Tools
 
 - [x] JSON → Excel
-- [ ] JSON Formatter / Viewer
+- [x] JSON Formatter / Viewer
+- [x] QR Code Generator
+- [x] Barcode Generator
 - [ ] JSON → CSV
 - [ ] CSV → JSON
 - [ ] Excel → JSON
