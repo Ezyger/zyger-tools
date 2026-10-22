@@ -1,0 +1,68 @@
+<h1>Removedor de fundo</h1>
+<p class="tool-description">
+  Remova fundos uniformes de logos, ícones e imagens. Todo o processamento acontece no seu navegador,
+  sem enviar arquivos para servidores. Fotografias com fundos complexos podem precisar de recorte com IA.
+</p>
+
+<section class="upload">
+  <label for="image-upload">Escolha uma imagem</label>
+  <input id="image-upload" type="file" accept="image/*,.svg" [disabled]="busy()" (change)="selectFile($event)" />
+  <p>PNG, JPEG, SVG, WebP e outros formatos compatíveis com o navegador. Até 20 MB e 8 megapixels.
+    SVG será convertido em pixels; imagens animadas serão processadas como uma imagem estática.</p>
+</section>
+
+@if (error()) {
+  <p class="error-banner" role="alert">{{ error() }}</p>
+}
+<p role="status" aria-live="polite">{{ busy() ? 'Processando imagem…' : '' }}</p>
+
+@if (originalUrl()) {
+  <fieldset [disabled]="busy()">
+    <legend>Ajustes do fundo</legend>
+    <label for="background-color">Cor a remover</label>
+    <input id="background-color" type="color" [value]="color()" (input)="updateColor($event)" />
+    <label for="tolerance">Tolerância: {{ tolerance() }}</label>
+    <input id="tolerance" type="range" min="0" max="150" [value]="tolerance()" (input)="updateTolerance($event)" />
+    <label class="checkbox">
+      <input type="checkbox" [checked]="connectedOnly()" (change)="updateConnected($event)" />
+      Remover apenas áreas ligadas às bordas
+    </label>
+    <p>A cor inicial vem de um canto da imagem. Aumente a tolerância para remover tons próximos.
+      Desmarque a opção acima para remover a cor também em áreas internas.</p>
+  </fieldset>
+  <fieldset [disabled]="busy()">
+    <legend>Formato de saída</legend>
+    <label for="output-format">Salvar como</label>
+    <select id="output-format" [value]="outputFormat()" (change)="updateFormat($event)">
+      @for (format of outputFormats; track format.value) {
+        <option [value]="format.value">{{ format.label }}</option>
+      }
+    </select>
+    @if (outputFormat() === 'jpeg') {
+      <p>JPEG não suporta transparência. As áreas removidas serão preenchidas com branco.</p>
+    } @else if (outputFormat() === 'svg') {
+      <p>O SVG preserva a transparência e contém o resultado em pixels incorporado. A imagem não será vetorizada.</p>
+    } @else {
+      <p>Este formato preserva a transparência das áreas removidas.</p>
+    }
+  </fieldset>
+  <div class="actions">
+    <button type="button" [disabled]="busy()" (click)="remove()">Remover fundo</button>
+    <button type="button" class="button-secondary" [disabled]="busy()" (click)="clear()">Limpar</button>
+    @if (resultUrl()) {
+      <a class="download" [href]="resultUrl()" [download]="downloadName()">Baixar {{ outputFormat().toUpperCase() }}</a>
+    }
+  </div>
+  <div class="previews">
+    <figure>
+      <figcaption>Original — {{ fileName() }}</figcaption>
+      <div class="checkerboard"><img [src]="originalUrl()" alt="Imagem original" /></div>
+    </figure>
+    @if (resultUrl()) {
+      <figure>
+        <figcaption>Resultado em {{ outputFormat().toUpperCase() }}</figcaption>
+        <div class="checkerboard"><img [src]="resultUrl()" alt="Imagem após remoção do fundo" /></div>
+      </figure>
+    }
+  </div>
+}

@@ -14,6 +14,13 @@ O Zyger Tools resolve isso com uma ferramenta que roda **100% no navegador**: na
 
 ## Funcionalidades
 
+- **Removedor de fundo** (`/tools/background-remover`)
+  - Upload de PNG, JPEG, SVG, WebP e outros formatos compatíveis com o navegador, até 20 MB e 8 megapixels.
+  - Remoção de fundos uniformes por cor, com tolerância ajustável e opção de preservar áreas internas.
+  - Prévia e exportação em PNG, WebP, JPEG (fundo branco) ou SVG com PNG incorporado, sem vetorização.
+  - Processamento local; SVG é rasterizado e animações são tratadas como imagens estáticas.
+  - Não utiliza IA para recortar fotografias com fundos complexos.
+
 - **JSON → Excel**
   - Upload de um arquivo `.json`, arrastar e soltar, ou colar o JSON diretamente.
   - Validação de sintaxe e estrutura do JSON, com mensagens de erro claras.

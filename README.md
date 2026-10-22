@@ -4,6 +4,8 @@
 
 **A growing collection of simple tools for everyday development tasks.**
 
+The **Background Remover** at `/tools/background-remover` removes uniform backgrounds locally by color, with adjustable tolerance and optional edge-connected removal. Accepts browser-supported images up to 20 MB and 8 megapixels. Exports PNG, WebP, JPEG with a white background, or SVG containing an embedded PNG (no vectorization). SVG inputs are rasterized; animations are processed as still images. Complex photo segmentation with AI is not included.
+
 Zyger Tools brings together small and useful utilities for developers in one place, with a focus on **simplicity, usability, and privacy**.
 
 The project was created from real everyday needs: instead of repeatedly writing temporary scripts or relying on third-party websites for small tasks, the idea is to have a collection of tools that are quick to access, easy to understand, and safe to use.

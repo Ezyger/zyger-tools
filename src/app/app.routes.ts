@@ -1,6 +1,10 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
+  {
+    path: 'tools/background-remover',
+    loadComponent: () => import('./tools/background-remover/background-remover').then((m) => m.BackgroundRemover),
+  },
   { path: '', pathMatch: 'full', loadComponent: () => import('./home/home').then((m) => m.Home) },
   {
     path: 'tools/json-to-excel',

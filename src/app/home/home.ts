@@ -11,6 +11,12 @@ import { Tool } from '../shared/tool.model';
 export class Home {
   public readonly tools: Tool[] = [
     {
+      id: 'background-remover',
+      name: 'Removedor de fundo',
+      description: 'Remova fundos uniformes de imagens e baixe um PNG transparente, diretamente no navegador.',
+      route: '/tools/background-remover',
+    },
+    {
       id: 'json-to-excel',
       name: 'JSON → Excel',
       description: 'Converta arquivos JSON em planilhas Excel (.xlsx) diretamente no navegador.',
