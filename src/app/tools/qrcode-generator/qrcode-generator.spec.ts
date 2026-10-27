@@ -55,4 +55,35 @@ describe('QrcodeGenerator', () => {
     expect(component.text()).toBe('');
     expect(component.previewDataUrl()).toBeNull();
   });
+
+  for (const batch of [false, true]) {
+    it(`increases both image and preview dimensions for each size in ${batch ? 'batch' : 'single'} mode`, async () => {
+      component.setBatchMode(batch);
+      if (batch) {
+        component.batchText.set('SHEI100019223tx\nARQT120684576tx');
+        component.generateBatch();
+      } else {
+        component.text.set('SHEI100019223tx');
+        component.generate();
+      }
+      const select = document.createElement('select');
+      let previousNaturalWidth = 0;
+      let previousPreviewWidth = 0;
+      for (const size of component.sizes) {
+        select.replaceChildren(new Option(size.label, String(size.value)));
+        component.onScaleChange({ target: select } as unknown as Event);
+        fixture.detectChanges();
+        const images: HTMLImageElement[] = Array.from(
+          fixture.nativeElement.querySelectorAll(batch ? '.thumb' : '.preview-image'),
+        );
+        await Promise.all(images.map((image) => image.decode()));
+        expect(images.length).toBe(batch ? 2 : 1);
+        const image = images[0];
+        expect(image.naturalWidth).toBeGreaterThan(previousNaturalWidth);
+        expect(image.getBoundingClientRect().width).toBeGreaterThan(previousPreviewWidth);
+        previousNaturalWidth = image.naturalWidth;
+        previousPreviewWidth = image.getBoundingClientRect().width;
+      }
+    });
+  }
 });

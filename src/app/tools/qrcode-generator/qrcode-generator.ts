@@ -66,6 +66,8 @@ export class QrcodeGenerator {
    */
   public onScaleChange(event: Event): void {
     this.scale.set(Number((event.target as HTMLSelectElement).value));
+    if (this.previewDataUrl()) this.generate();
+    if (this.batchItems().length > 0) this.generateBatch();
   }
 
   /**

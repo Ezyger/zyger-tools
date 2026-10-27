@@ -14,12 +14,25 @@ O Zyger Tools resolve isso com uma ferramenta que roda **100% no navegador**: na
 
 ## Funcionalidades
 
+- **Conversor de imagens** (`/tools/image-converter`)
+  - Converte imagens compatíveis com o navegador para PNG, SVG, JPEG e WebP, localmente.
+  - Preserva as dimensões originais, sem reduzir a resolução automaticamente; limite de 64 MB e 40 megapixels.
+  - PNG sem perdas e SVG com PNG incorporado sem perdas; JPEG/WebP com qualidade máxima do encoder (ainda sujeitos a perdas).
+  - Duas opções para PNG/JPEG/WebP → SVG: incorporar o PNG sem perdas ou vetorizar em curvas editáveis.
+  - Vetorização local com ImageTracerJS (Unlicense), em Web Worker, com cancelamento, paleta de 4 a 64 cores e três níveis de detalhes/suavização. Limite de 4 megapixels, sem redução automática.
+  - O traçado aproxima a imagem e pode alterar detalhes: indicado para logos e ícones, não para fotografias. SVG para SVG preserva o arquivo original.
+  - SVG pode ser renderizado em 1×, 2× ou 4× para PNG/JPEG/WebP, aproveitando os detalhes vetoriais.
+  - Transparência preservada em PNG, WebP e SVG; JPEG utiliza fundo branco. Metadados DPI/EXIF podem ser removidos.
+
 - **Removedor de fundo** (`/tools/background-remover`)
   - Upload de PNG, JPEG, SVG, WebP e outros formatos compatíveis com o navegador, até 20 MB e 8 megapixels.
   - Remoção de fundos uniformes por cor, com tolerância ajustável e opção de preservar áreas internas.
   - Prévia e exportação em PNG, WebP, JPEG (fundo branco) ou SVG com PNG incorporado, sem vetorização.
   - Processamento local; SVG é rasterizado e animações são tratadas como imagens estáticas.
-  - Não utiliza IA para recortar fotografias com fundos complexos.
+  - Modo IA padrão para pessoas, produtos e objetos, com máscara suave aplicada na resolução original.
+  - BiRefNet lite 512 (MIT), revisão fixa `962e67969ec6acec9c19fab76acee4f5e22e990c`, executado por ONNX Runtime Web em Web Worker, com WebGPU quando disponível e alternativa WASM.
+  - No primeiro uso, baixa aproximadamente 192 MB de modelo do Hugging Face, além do runtime; cache local quando disponível. A imagem nunca é enviada ao serviço.
+  - Progresso e cancelamento do processamento. O modo por cor continua disponível para logos e ícones.
 
 - **JSON → Excel**
   - Upload de um arquivo `.json`, arrastar e soltar, ou colar o JSON diretamente.

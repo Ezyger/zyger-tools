@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BackgroundRemover } from './background-remover';
+import { BackgroundRemoverAi } from './background-remover-ai.service';
 
 describe('BackgroundRemover', () => {
   let fixture: ComponentFixture<BackgroundRemover>;
@@ -9,6 +10,7 @@ describe('BackgroundRemover', () => {
     await TestBed.configureTestingModule({ imports: [BackgroundRemover] }).compileComponents();
     fixture = TestBed.createComponent(BackgroundRemover);
     component = fixture.componentInstance;
+    component.mode.set('color');
     fixture.detectChanges();
   });
 
@@ -21,7 +23,7 @@ describe('BackgroundRemover', () => {
     expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:result');
     expect(component.originalUrl()).toBeNull();
     expect(component.resultUrl()).toBeNull();
-    expect(component.busy()).toBeFalse();
+    expect(component.isProcessing()).toBeFalse();
   });
 
   it('uses the selected extension without changing the base name', () => {
@@ -35,7 +37,7 @@ describe('BackgroundRemover', () => {
     component.resultUrl.set('blob:result');
     const input = document.createElement('input');
     input.value = '42';
-    component.updateTolerance({ target: input } as unknown as Event);
+    component.onToleranceChange({ target: input } as unknown as Event);
     expect(component.tolerance()).toBe(42);
     expect(component.resultUrl()).toBeNull();
     expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:result');
@@ -48,20 +50,47 @@ describe('BackgroundRemover', () => {
     const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve));
     const input = document.createElement('input');
     Object.defineProperty(input, 'files', { value: [new File([blob!], 'logo.png', { type: 'image/png' })] });
-    await component.selectFile({ target: input } as unknown as Event);
+    await component.onFileInputChange({ target: input } as unknown as Event);
     await component.remove();
     expect(component.resultUrl()).not.toBeNull();
 
     let finishExport!: BlobCallback;
-    spyOn(HTMLCanvasElement.prototype, 'toBlob').and.callFake((callback) => { finishExport = callback; });
+    spyOn(HTMLCanvasElement.prototype, 'toBlob').and.callFake((callback) => {
+      finishExport = callback;
+    });
     const select = document.createElement('select');
     select.add(new Option('WebP', 'webp'));
-    const pending = component.updateFormat({ target: select } as unknown as Event);
+    const pending = component.onFormatChange({ target: select } as unknown as Event);
     component.clear();
     finishExport(new Blob([], { type: 'image/png' }));
     await pending;
-    expect(component.error()).toBeNull();
+    expect(component.errorMessage()).toBeNull();
     expect(component.resultUrl()).toBeNull();
-    expect(component.busy()).toBeFalse();
+    expect(component.isProcessing()).toBeFalse();
+  });
+
+  it('uses the AI result and keeps the original dimensions', async () => {
+    const ai = fixture.debugElement.injector.get(BackgroundRemoverAi);
+    spyOn(ai, 'remove').and.callFake(async (source, progress) => {
+      progress('Recortando…');
+      return new Uint8ClampedArray(source.data.length);
+    });
+    const canvas = document.createElement('canvas');
+    canvas.width = 4;
+    canvas.height = 3;
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve));
+    const input = document.createElement('input');
+    Object.defineProperty(input, 'files', { value: [new File([blob!], 'logo.png', { type: 'image/png' })] });
+    await component.onFileInputChange({ target: input } as unknown as Event);
+    component.mode.set('ai');
+    await component.remove();
+    expect(ai.remove).toHaveBeenCalled();
+    const image = new Image();
+    image.src = component.resultUrl()!;
+    await image.decode();
+    expect(image.naturalWidth).toBe(4);
+    expect(image.naturalHeight).toBe(3);
+    expect(component.isProcessing()).toBeFalse();
+    expect(component.progress()).toBe('');
   });
 });

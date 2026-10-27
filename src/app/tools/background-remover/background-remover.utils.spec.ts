@@ -6,11 +6,31 @@ describe('removeBackground', () => {
 
   it('preserves enclosed regions when removing only the connected background', () => {
     const source = new Uint8ClampedArray([
-      ...white, ...white, ...white, ...white, ...white,
-      ...white, ...black, ...black, ...black, ...white,
-      ...white, ...black, ...white, ...black, ...white,
-      ...white, ...black, ...black, ...black, ...white,
-      ...white, ...white, ...white, ...white, ...white,
+      ...white,
+      ...white,
+      ...white,
+      ...white,
+      ...white,
+      ...white,
+      ...black,
+      ...black,
+      ...black,
+      ...white,
+      ...white,
+      ...black,
+      ...white,
+      ...black,
+      ...white,
+      ...white,
+      ...black,
+      ...black,
+      ...black,
+      ...white,
+      ...white,
+      ...white,
+      ...white,
+      ...white,
+      ...white,
     ]);
     const result = removeBackground(source, 5, 5, white, 0, true);
     expect(result[3]).toBe(0);

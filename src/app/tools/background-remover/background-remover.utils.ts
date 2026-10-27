@@ -1,13 +1,12 @@
 /**
- * Removes matching pixels connected to an edge, or all matching pixels when requested.
- * @param source The source pixel data in RGBA format.
- * @param width The width of the image in pixels.
- * @param height The height of the image in pixels.
- * @param color The RGBA color to match for removal.
- * @param tolerance The tolerance for color matching (0-255).
- * @param connectedOnly Whether to remove only pixels connected to the edge.
- * @returns A new Uint8ClampedArray with the background removed.
- * @throws Error if the input parameters are invalid.
+ * Remove a cor selecionada, opcionalmente apenas nas áreas conectadas às bordas.
+ * @param source Pixels da imagem original em formato RGBA.
+ * @param width Largura da imagem em pixels.
+ * @param height Altura da imagem em pixels.
+ * @param color Cor RGB que será removida.
+ * @param tolerance Diferença máxima aceita por canal de cor.
+ * @param connectedOnly Restringe a remoção às áreas conectadas às bordas.
+ * @returns Uma cópia dos pixels com o fundo removido, preservando o original.
  */
 export function removeBackground(
   source: Uint8ClampedArray,

@@ -31,12 +31,23 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "allowedCommonJsDependencies": [
-              "jszip"
+              "jszip",
+              "imagetracerjs"
             ],
             "assets": [
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "ort-wasm-simd-threaded.asyncify.*",
+                "input": "node_modules/onnxruntime-web/dist",
+                "output": "assets/onnx/1.30.0"
+              },
+              {
+                "glob": "ort-wasm-simd-threaded.{mjs,wasm}",
+                "input": "node_modules/onnxruntime-web/dist",
+                "output": "assets/onnx/1.30.0"
               }
             ],
             "styles": [
@@ -95,6 +106,16 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "ort-wasm-simd-threaded.asyncify.*",
+                "input": "node_modules/onnxruntime-web/dist",
+                "output": "assets/onnx/1.30.0"
+              },
+              {
+                "glob": "ort-wasm-simd-threaded.{mjs,wasm}",
+                "input": "node_modules/onnxruntime-web/dist",
+                "output": "assets/onnx/1.30.0"
               }
             ],
             "styles": [

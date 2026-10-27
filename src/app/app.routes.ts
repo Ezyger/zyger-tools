@@ -2,6 +2,10 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
+    path: 'tools/image-converter',
+    loadComponent: () => import('./tools/image-converter/image-converter').then((m) => m.ImageConverter),
+  },
+  {
     path: 'tools/background-remover',
     loadComponent: () => import('./tools/background-remover/background-remover').then((m) => m.BackgroundRemover),
   },

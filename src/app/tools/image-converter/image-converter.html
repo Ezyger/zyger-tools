@@ -1,0 +1,137 @@
+<h1>Conversor de imagens</h1>
+<p class="tool-description">
+  Converta PNG, SVG, JPEG, WebP e outros formatos compatíveis com o navegador. Processamento local, sem enviar sua imagem para
+  servidores.
+</p>
+<section class="upload">
+  <label for="converter-upload">Escolha uma imagem</label>
+  <input
+    id="converter-upload"
+    type="file"
+    accept="image/*,.svg"
+    [disabled]="isProcessing()"
+    (change)="onFileInputChange($event)" />
+  <p>Até 64 MB e 40 megapixels. Imagens animadas serão convertidas em uma imagem estática.</p>
+</section>
+@if (errorMessage()) {
+  <p class="error-banner" role="alert">{{ errorMessage() }}</p>
+}
+<p role="status" aria-live="polite">
+  {{ isProcessing() ? (isVectorizing() ? 'Traçando curvas e formas vetoriais…' : 'Processando imagem…') : '' }}
+</p>
+@if (info(); as image) {
+  <fieldset [disabled]="isProcessing()">
+    <legend>Configuração da conversão</legend>
+    <label for="converter-format">Formato de saída</label>
+    <select id="converter-format" [value]="format()" (change)="onFormatChange($event)">
+      @for (option of formats; track option.value) {
+        <option [value]="option.value" [selected]="option.value === format()">{{ option.label }}</option>
+      }
+    </select>
+    @if (format() === 'svg' && !image.svg) {
+      <label for="svg-mode">Como criar o SVG</label>
+      <select id="svg-mode" [value]="svgMode()" (change)="onSvgModeChange($event)">
+        <option value="embed">Incorporar imagem — preservar aparência</option>
+        <option value="vector">Vetorizar — criar curvas editáveis</option>
+      </select>
+      @if (svgMode() === 'vector') {
+        <label for="vector-colors">Máximo de cores</label>
+        <select id="vector-colors" [value]="vectorColors()" (change)="onVectorColorsChange($event)">
+          @for (colors of colorOptions; track colors) {
+            <option [value]="colors" [selected]="colors === vectorColors()">{{ colors }} cores</option>
+          }
+        </select>
+        <label for="vector-detail">Detalhes e suavização</label>
+        <select id="vector-detail" [value]="vectorDetail()" (change)="onVectorDetailChange($event)">
+          <option value="fine">Mais detalhes — curvas fiéis, arquivo maior</option>
+          <option value="balanced">Equilibrado — detalhes e tamanho</option>
+          <option value="smooth">Mais suave — simplificar contornos</option>
+        </select>
+        <p>
+          Indicado para logos, ícones e desenhos com cores definidas. A vetorização aproxima os contornos; pode alterar detalhes,
+          textos e degradês. Fotografias geralmente ficam melhores em PNG/WebP. Até 4 megapixels, sem redução automática. Mais
+          cores e detalhes podem gerar um SVG maior.
+        </p>
+      }
+    }
+    @if (image.svg && format() !== 'svg') {
+      <label for="converter-scale">Resolução de renderização</label>
+      <select id="converter-scale" [value]="scale()" (change)="onScaleChange($event)">
+        <option value="1">Original (1×)</option>
+        <option value="2">Dobro (2×)</option>
+        <option value="4">Quádruplo (4×)</option>
+      </select>
+      <p>O SVG é renderizado novamente na resolução escolhida, aproveitando os detalhes vetoriais.</p>
+    }
+    <p>Saída: {{ outputWidth() }} × {{ outputHeight() }} pixels.</p>
+    @if (format() === 'png') {
+      <p>PNG sem perdas: preserva os pixels e a transparência. Recomendado para máxima fidelidade.</p>
+    } @else if (format() === 'svg' && image.svg && scale() === 1) {
+      <p>O SVG original será preservado, incluindo seus elementos vetoriais.</p>
+    } @else if (format() === 'svg' && svgMode() === 'vector') {
+      <p>
+        O SVG terá curvas e formas editáveis, sem PNG incorporado. Compare a prévia com o original antes de usar no aplicativo.
+      </p>
+    } @else if (format() === 'svg') {
+      <p>
+        O SVG contém um PNG incorporado sem perdas. Os pixels não são convertidos em curvas vetoriais; ampliar o SVG não recupera
+        detalhes ausentes na imagem original.
+      </p>
+    } @else if (format() === 'jpeg') {
+      <p>JPEG com qualidade máxima. O formato tem perdas e não suporta transparência: as áreas transparentes ficarão brancas.</p>
+    } @else {
+      <p>WebP com qualidade máxima e transparência. A compressão do navegador ainda pode introduzir perdas.</p>
+    }
+    <p>
+      A conversão preserva as dimensões originais por padrão. A prévia abaixo se ajusta à tela; o arquivo baixado mantém a
+      resolução indicada. Metadados como DPI e EXIF podem não ser preservados.
+    </p>
+  </fieldset>
+  <div class="actions">
+    <button type="button" [disabled]="isProcessing()" (click)="convert()">Converter imagem</button>
+    @if (isVectorizing()) {
+      <button type="button" class="button-secondary" (click)="cancelVectorization()">Cancelar vetorização</button>
+    }
+    <button type="button" class="button-secondary" [disabled]="isProcessing()" (click)="clear()">Limpar</button>
+    @if (resultUrl()) {
+      <a class="download" [href]="resultUrl()" [download]="downloadName()">Baixar {{ format().toUpperCase() }}</a>
+    }
+  </div>
+  <div class="preview-controls">
+    <label for="preview-zoom">Zoom de comparação</label>
+    <select id="preview-zoom" [value]="previewZoom()" (change)="onPreviewZoomChange($event)">
+      <option value="0">Ajustar à tela</option>
+      <option value="1">100%</option>
+      <option value="2">200%</option>
+      <option value="4">400%</option>
+      <option value="8">800%</option>
+    </select>
+    <p>Altera somente a visualização. Amplie para comparar contornos, textos e detalhes antes de baixar.</p>
+  </div>
+  <div class="previews" [class.zoomed]="previewZoom() > 0">
+    <figure>
+      <figcaption>
+        Original — {{ image.name }} · {{ image.width }} × {{ image.height }} · {{ formatBytes(image.bytes) }}
+      </figcaption>
+      <div class="checkerboard">
+        <img
+          [src]="originalUrl()"
+          [style.width.px]="previewZoom() ? image.width * previewZoom() : null"
+          alt="Imagem original para conversão" />
+      </div>
+    </figure>
+    @if (resultUrl()) {
+      <figure>
+        <figcaption>
+          Resultado {{ format().toUpperCase() }} · {{ outputWidth() }} × {{ outputHeight() }} · {{ formatBytes(resultBytes()!) }}
+        </figcaption>
+        <div class="checkerboard">
+          <img
+            [src]="resultUrl()"
+            [style.width.px]="previewZoom() ? outputWidth() * previewZoom() : null"
+            alt="Imagem convertida" />
+        </div>
+      </figure>
+    }
+  </div>
+}

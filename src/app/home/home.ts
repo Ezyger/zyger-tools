@@ -11,9 +11,15 @@ import { Tool } from '../shared/tool.model';
 export class Home {
   public readonly tools: Tool[] = [
     {
+      id: 'image-converter',
+      name: 'Conversor de imagens',
+      description: 'Converta imagens entre PNG, SVG, JPEG e WebP com qualidade máxima e processamento local.',
+      route: '/tools/image-converter',
+    },
+    {
       id: 'background-remover',
       name: 'Removedor de fundo',
-      description: 'Remova fundos uniformes de imagens e baixe um PNG transparente, diretamente no navegador.',
+      description: 'Remova fundos de imagens com IA ou por cor e exporte com transparência, diretamente no navegador.',
       route: '/tools/background-remover',
     },
     {

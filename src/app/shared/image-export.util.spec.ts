@@ -1,6 +1,6 @@
-import { exportBackgroundImage } from './background-remover-export.utils';
+import { exportCanvasImage } from './image-export.util';
 
-describe('exportBackgroundImage', () => {
+describe('exportCanvasImage', () => {
   let canvas: HTMLCanvasElement;
 
   beforeEach(() => {
@@ -11,7 +11,7 @@ describe('exportBackgroundImage', () => {
 
   it('preserves transparency in PNG and WebP', async () => {
     for (const format of ['png', 'webp'] as const) {
-      const blob = await exportBackgroundImage(canvas, format);
+      const blob = await exportCanvasImage(canvas, format);
       expect(blob.type).toBe(`image/${format}`);
       const bitmap = await createImageBitmap(blob);
       try {
@@ -25,7 +25,7 @@ describe('exportBackgroundImage', () => {
   });
 
   it('fills JPEG transparency with white without changing the source', async () => {
-    const blob = await exportBackgroundImage(canvas, 'jpeg');
+    const blob = await exportCanvasImage(canvas, 'jpeg');
     expect(blob.type).toBe('image/jpeg');
     expect(canvas.getContext('2d')!.getImageData(0, 0, 1, 1).data[3]).toBe(0);
     const bitmap = await createImageBitmap(blob);
@@ -39,7 +39,7 @@ describe('exportBackgroundImage', () => {
   });
 
   it('embeds a PNG with the original dimensions in a valid SVG', async () => {
-    const blob = await exportBackgroundImage(canvas, 'svg');
+    const blob = await exportCanvasImage(canvas, 'svg');
     expect(blob.type).toBe('image/svg+xml');
     const svg = new DOMParser().parseFromString(await blob.text(), 'image/svg+xml');
     expect(svg.querySelector('parsererror')).toBeNull();
@@ -49,11 +49,27 @@ describe('exportBackgroundImage', () => {
 
   it('rejects silent browser fallback to PNG', async () => {
     spyOn(canvas, 'toBlob').and.callFake((callback) => callback(new Blob([], { type: 'image/png' })));
-    await expectAsync(exportBackgroundImage(canvas, 'webp')).toBeRejectedWithError(/não permite exportar/);
+    await expectAsync(exportCanvasImage(canvas, 'webp')).toBeRejectedWithError(/não permite exportar/);
   });
 
   it('reports a failed encoder', async () => {
     spyOn(canvas, 'toBlob').and.callFake((callback) => callback(null));
-    await expectAsync(exportBackgroundImage(canvas, 'png')).toBeRejectedWithError(/Não foi possível exportar/);
+    await expectAsync(exportCanvasImage(canvas, 'png')).toBeRejectedWithError(/Não foi possível exportar/);
+  });
+});
+
+describe('exportCanvasImage quality', () => {
+  it('requests the maximum encoder quality for JPEG and WebP', async () => {
+    const encoder = spyOn(HTMLCanvasElement.prototype, 'toBlob').and.callFake((callback, mime, quality) => {
+      expect(quality).toBe(1);
+      callback(new Blob([], { type: mime }));
+    });
+    for (const format of ['jpeg', 'webp'] as const) {
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 2;
+      const blob = await exportCanvasImage(canvas, format);
+      expect(blob.type).toBe(`image/${format}`);
+    }
+    expect(encoder).toHaveBeenCalledTimes(2);
   });
 });
